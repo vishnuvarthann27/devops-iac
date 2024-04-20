@@ -3,6 +3,7 @@ Resources:
   Books:
     Type: AWS::DynamoDB::Table
     Properties:
+      TableName: Books
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
