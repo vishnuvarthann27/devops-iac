@@ -1,4 +1,4 @@
-name: Deploy Lambda Function with API Gateway
+name: Deploy Lambda Function with API Gateway and DynamoDB
 
 on:
   push:
