@@ -38,6 +38,7 @@ Resources:
           BOOKS_TABLE_NAME: !Ref Books
           BOOKS_TABLE_ARN: !GetAtt Books.Arn
       Policies:
+        - AmazonDynamoDBFullAccess
         - DynamoDBCrudPolicy:
             TableName: !Ref Books
   GetBooksFunctionLogGroup:
@@ -69,6 +70,7 @@ Resources:
           BOOKS_TABLE_NAME: !Ref Books
           BOOKS_TABLE_ARN: !GetAtt Books.Arn
       Policies:
+        - AmazonDynamoDBFullAccess
         - DynamoDBCrudPolicy:
             TableName: !Ref Books
   SaveBooksFunctionLogGroup:
