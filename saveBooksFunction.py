@@ -6,19 +6,21 @@ def lambda_handler(event, contect):
     client = boto3.client('dynamodb')
 
     tableBooks = dynamodb.Table('Books')
+    body = json.loads(event['body'])
 
-    id = event['id']
-    print(id)
-    title = event['title']
-    author = event['author']
+
+    id = body['id']
+    title = body['title']
+    author = body['author']
 
     try:
-        tableBooks.put_item( Item = {'id':id, 'title': title, "author" : author})
+        tableBooks.put_item( Item = {'id':str(id), 'title': title, "author" : author})
         return {
             'statusCode' : 200,
             'body' : json.dumps('Successfully created record')
         }
-    except:
+    except Exception as ex:
+        print(ex)
         return {
             'statusCode' : 400,
             'body' : json.dumps('Error creating record')

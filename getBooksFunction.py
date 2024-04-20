@@ -6,7 +6,10 @@ def lambda_handler(event, contect):
 
     tableBooks = dynamodb.Table('Books')
     response = tableBooks.scan()
+
     return {
         'statusCode' : 200,
-        'body' : response['Items']
+        #'header':{'Content-Type': 'application/json'},
+        'body' : response['Items'],
+        #'isBase64Encoded': False
     }
