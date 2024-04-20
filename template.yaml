@@ -1,0 +1,107 @@
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  Books:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+  GetBooksFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: GetBooksFunction
+      CodeUri: ./getBooksFunction.py
+      Handler: handler.handler
+      Runtime: python3.9
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      FunctionUrlConfig:
+        AuthType: NONE
+      Events:
+        BooksAPIGETgetBooks:
+          Type: Api
+          Properties:
+            Path: /getBooks
+            Method: GET
+            RestApiId: !Ref BooksAPI
+      Environment:
+        Variables:
+          BOOKS_TABLE_NAME: !Ref Books
+          BOOKS_TABLE_ARN: !GetAtt Books.Arn
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Books
+  GetBooksFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${GetBooksFunction}
+  SaveBooksFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: SaveBooksFunction
+      CodeUri: ./saveBooksFunction.py
+      Handler: handler.handler
+      Runtime: python3.9
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Events:
+        BooksAPIPOSTsaveBooks:
+          Type: Api
+          Properties:
+            Path: /saveBooks
+            Method: POST
+            RestApiId: !Ref BooksAPI
+      Environment:
+        Variables:
+          BOOKS_TABLE_NAME: !Ref Books
+          BOOKS_TABLE_ARN: !GetAtt Books.Arn
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Books
+  SaveBooksFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${SaveBooksFunction}
+  BooksAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub
+        - ${ResourceName} From Stack ${AWS::StackName}
+        - ResourceName: BooksAPI
+      StageName: Prod
+      DefinitionBody:
+        openapi: '3.0'
+        info: {}
+        paths:
+          /getBooks:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetBooksFunction.Arn}/invocations
+              responses: {}
+          /saveBooks:
+            post:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SaveBooksFunction.Arn}/invocations
+              responses: {}
+      EndpointConfiguration: REGIONAL
+      TracingEnabled: true
+      Cors:
+        MaxAge: 5
