@@ -4,7 +4,7 @@ name: Deploy Lambda Function
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
