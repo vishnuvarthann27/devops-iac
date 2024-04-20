@@ -1,0 +1,36 @@
+# Deploy Lambda function through CI/CD
+name: Deploy Lambda Function
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Install AWS CLI and SAM CLI
+        run: |
+          pip install awscli
+          pip install aws-sam-cli
+
+      - name: Configure AWS Credentials
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region ap-northeast-1
+
+      - name: Build and Deploy Lambda Function
+        run: |
+          sam build
+          echo "y" | sam deploy --stack-name LambdaFuncStack --region ap-northeast-1 --resolve-s3 --confirm-changeset false --capabilities CAPABILITY_IAM
