@@ -8,6 +8,7 @@ def lambda_handler(event, contect):
     tableBooks = dynamodb.Table('Books')
 
     id = event['id']
+    print(id)
     title = event['title']
     author = event['author']
 
