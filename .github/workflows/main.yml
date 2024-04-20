@@ -1,5 +1,4 @@
-# Deploy Lambda function through CI/CD
-name: Deploy Lambda Function
+name: Deploy Lambda Function with API Gateway
 
 on:
   push:
