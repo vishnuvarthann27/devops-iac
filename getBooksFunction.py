@@ -9,7 +9,6 @@ def lambda_handler(event, contect):
 
     return {
         'statusCode' : 200,
-        #'header':{'Content-Type': 'application/json'},
-        'body' : response['Items'],
-        #'isBase64Encoded': False
+        'body' : json.dumps(response['Items']),
+        'isBase64Encoded': False
     }
