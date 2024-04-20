@@ -18,8 +18,8 @@ Resources:
       Description: !Sub
         - Stack ${AWS::StackName} Function ${ResourceName}
         - ResourceName: GetBooksFunction
-      CodeUri: ./getBooksFunction.py
-      Handler: handler.handler
+      CodeUri: ./
+      Handler: getBooksFunction.lambda_handler
       Runtime: python3.9
       MemorySize: 3008
       Timeout: 30
@@ -38,6 +38,7 @@ Resources:
           BOOKS_TABLE_NAME: !Ref Books
           BOOKS_TABLE_ARN: !GetAtt Books.Arn
       Policies:
+        - AmazonDynamoDBFullAccess
         - DynamoDBCrudPolicy:
             TableName: !Ref Books
   GetBooksFunctionLogGroup:
@@ -51,8 +52,8 @@ Resources:
       Description: !Sub
         - Stack ${AWS::StackName} Function ${ResourceName}
         - ResourceName: SaveBooksFunction
-      CodeUri: ./saveBooksFunction.py
-      Handler: handler.handler
+      CodeUri: ./
+      Handler: saveBooksFunction.lambda_handler
       Runtime: python3.9
       MemorySize: 3008
       Timeout: 30
@@ -69,6 +70,7 @@ Resources:
           BOOKS_TABLE_NAME: !Ref Books
           BOOKS_TABLE_ARN: !GetAtt Books.Arn
       Policies:
+        - AmazonDynamoDBFullAccess
         - DynamoDBCrudPolicy:
             TableName: !Ref Books
   SaveBooksFunctionLogGroup:
